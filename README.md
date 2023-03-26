@@ -9,6 +9,20 @@ tui session selector written in python with toml config
 * toml
 * rich
 
+## show wms after loginning into tty
+
+```sh
+# check if you're in tty
+if [ "`tty`" = "/dev/tty1" ]; then {
+	# this condition needed for ignoring wms in shells opened from wms
+	if [ "$WMS" = "" ]; then {
+		# change 'wms' to 'python `path to wms.py`' or whatever you have wms
+  	wms
+	}; fi
+	return # return needed only for avoiding configs in tty
+}; fi
+```
+
 ## greeting script
 
 this script executes with selected session (before session execution, after selection)<br/>
