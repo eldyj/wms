@@ -19,7 +19,7 @@ if [ "`tty`" = "/dev/tty1" ]; then {
 		# change 'wms' to 'python `path to wms.py`' or whatever you have wms
   	wms
 	}; fi
-	return # return needed only for avoiding configs in tty
+	return # return needed only for avoiding rest of configs in tty
 }; fi
 ```
 
