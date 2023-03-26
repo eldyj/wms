@@ -205,6 +205,7 @@ def main():
 
     if choise == 'cancel':
         if ask('you really want to exit?'):
+            sh_exec(['clear'])
             return
 
         main()
