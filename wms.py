@@ -1,3 +1,4 @@
+#!/usr/bin/python
 from os import environ
 from os.path import exists
 from subprocess import run as sh_exec
