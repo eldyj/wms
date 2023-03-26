@@ -137,6 +137,10 @@ def add_editor(command):
 def check_options():
     load_config()
     init_table()
+    system_options = ['suspend','reboot','shutdown']
+
+    if not Config.show_suspend:
+        system_options.pop(0)
 
     for i in Config.xorg:
         add_xorg(i)
@@ -150,7 +154,7 @@ def check_options():
     for i in Config.editors:
         add_editor(i)
 
-    for i in ['suspend','reboot','shutdown']:
+    for i in system_options:
         add_system(i)
 
 
