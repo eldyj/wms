@@ -11,7 +11,7 @@ tui session selector written in python with toml config
 
 ## greeting script
 
-this script executes with selected session (before session execution, after selectio)<br/>
+this script executes with selected session (before session execution, after selection)<br/>
 you can write it in any language, but you need add executable permissions to it (chmod +x ~/.wms)<br/>
 it's located in `~/.wms` or `/etc/wms`<br/>
 
