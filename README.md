@@ -17,7 +17,7 @@ if [ "`tty`" = "/dev/tty1" ]; then {
 	# this condition needed for ignoring wms in shells opened from wms
 	if [ "$WMS" = "" ]; then {
 		# change 'wms' to 'python `path to wms.py`' or whatever you have wms
-  	wms
+		wms
 	}; fi
 	return # return needed only for avoiding rest of configs in tty
 }; fi

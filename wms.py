@@ -157,12 +157,13 @@ def check_options():
     for i in system_options:
         add_system(i)
 
-
-    add_option('cancel',[],'which','cancel')
+    editor = 'vi' if 'EDITOR' not in environ else environ['EDITOR']
+    add_option('edit config',[editor,f"{environ['HOME']}/.config/wms/config.toml"],editor,'wms')
+    add_option('cancel',[],'which','wms')
     sh_exec(['clear'])
 
 wms_env = environ.copy()
-wms_env['options'] = 'true'
+wms_env['WMS'] = 'true'
 wms_env['PWD'] = wms_env['HOME']
 
 def ask_option():
