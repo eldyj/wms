@@ -167,12 +167,26 @@ wms_env = environ.copy()
 wms_env['WMS'] = 'true'
 wms_env['PWD'] = wms_env['HOME']
 
+def non_crashing_input(**kwargs):
+    try:
+        return input(**kwargs)
+    except:
+        print('...')
+        return non_crashing_input(**kwargs)
+
+def non_crashing_ask(text):
+    try:
+        return ask(text)
+    except:
+        print('')
+        return ask(text)
+
 def ask_option():
-    option = input(default='0')
+    option = non_crashing_input(default='0')
 
     while option not in Tmp.options_map:
         print(f"[red]there is no option with identifier {option}[/red]")
-        option = input(default='0')
+        option = non_crashing_input(default='0')
 
     return option
 
@@ -200,11 +214,11 @@ def main():
     cmd = Tmp.options_map[choise]
 
     if choise in ['shutdown','reboot']:
-        if ask(f"you really want to {choise}?"):
+        if non_crashing_ask(f"you really want to {choise}?"):
             sh_exec(cmd)
 
     if choise == 'cancel':
-        if ask('you really want to exit?'):
+        if non_crashing_ask('you really want to exit?'):
             sh_exec(['clear'])
             return
 
