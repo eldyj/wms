@@ -49,14 +49,25 @@ or in `/etc/wmsconfig.toml`<br/>
 
 example config:
 ```toml
-shells = ['ksh','ruby']
+[sessions]
+shells = ['ksh93','bash','ruby']
 editors = ['nvim']
 
-[wms]
-xorg = ['i3']
+[sessions.wms]
+xorg = ['i3','awesome']
+wayland = []
+
+[security]
+password_required = false
 
 [look]
-border = 'simple'
+border = 'rounded'
+show_suspend = false
+
 [look.colors]
-desktop = 'bold green'
+desktop = 'green'
+editor = 'magenta'
+shell = 'blue'
+other = 'red'
+column = 'white'
 ```

@@ -25,7 +25,7 @@ class Tmp:
 class Config:
     xorg = ['i3','dwm','xmonad','awesome','bspwm','hypr','wtfwm','leftwm','icewm','openbox']
     wayland = ['sway','Hyprland','qtile']
-    shells = ['nu','sh','ash','csh','ksh93','ion','zsh','bash','fish','tcsh']
+    shells = ['nu','sh','ash','csh','ksh','ion','zsh','bash','fish','tcsh']
     editors = ['nvim','lvim','vim','nano','micro','hx','emacs']
 # look and other
     colors = {
@@ -76,27 +76,27 @@ def load_config():
     Config.editors.clear()
     Config.show_suspend = False
     Config.border = False
-    
-    if 'password_required' in tmp:
-        Config.password_required = tmp['password_required']
+   
+    if 'security' in tmp:
+        if 'password_required' in tmp['security']:
+            Config.password_required = tmp['security']['password_required']
 
-    if 'wms' in tmp:
-        if 'wayland' in tmp['wms']:
-            Config.wayland = tmp['wms']['wayland']
-        if 'xorg' in tmp['wms']:
-            Config.xorg = tmp['wms']['xorg']
+    if 'sessions' in tmp:
+        if 'wms' in tmp['sessions']:
+            if 'wayland' in tmp['sessions']['wms']:
+                Config.wayland = tmp['sessions']['wms']['wayland']
+            if 'xorg' in tmp['sessions']['wms']:
+                Config.xorg = tmp['sessions']['wms']['xorg']
 
-    if 'shells' in tmp:
-        Config.shells = tmp['shells']
+        if 'shells' in tmp['sessions']:
+            Config.shells = tmp['sessions']['shells']
 
-    if 'editors' in tmp:
-        Config.editors = tmp['editors']
-
-    if 'other' in tmp:
-        if 'show_suspend' in tmp:
-            Config.show_suspend = tmp['other']['show_suspend']
+        if 'editors' in tmp['sessions']:
+            Config.editors = tmp['sessions']['editors']
 
     if 'look' in tmp:
+        if 'show_suspend' in tmp['look']:
+            Config.show_suspend = tmp['look']['show_suspend']
         if 'border' in tmp['look']:
             Config.border = tmp['look']['border']
         if 'colors' in tmp['look']:
