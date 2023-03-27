@@ -80,9 +80,6 @@ def load_config():
     if 'password_required' in tmp:
         Config.password_required = tmp['password_required']
 
-    if 'WMS' in environ:
-        Config.password_required = False
-
     if 'wms' in tmp:
         if 'wayland' in tmp['wms']:
             Config.wayland = tmp['wms']['wayland']
@@ -173,6 +170,11 @@ def check_options():
     editor = 'vi' if 'EDITOR' not in environ else environ['EDITOR']
     add_option('edit config',[editor,f"{environ['HOME']}/.config/wms/config.toml"],editor,'wms')
     add_option('cancel',[],'which','wms')
+
+    if 'WMS' in environ:
+        Tmp.locked.clear()
+        Tmp.locked.append('edit')
+
     sh_exec(['clear'])
 
 wms_next = f"{dirname(abspath(__file__))}/wms_next"
