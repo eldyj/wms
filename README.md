@@ -8,6 +8,7 @@ tui session selector written in python with toml config
 
 * toml
 * rich
+* pam (for password\_required)
 
 ## show wms after loginning into tty
 
