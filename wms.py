@@ -1,6 +1,6 @@
 #!/usr/bin/python
 from os import environ
-from os.path import exists
+from os.path import exists, dirname, abspath
 from subprocess import run as sh_exec
 from toml import loads as parse_toml
 from rich import print, box
@@ -79,6 +79,9 @@ def load_config():
     
     if 'password_required' in tmp:
         Config.password_required = tmp['password_required']
+
+    if 'WMS' in environ:
+        Config.password_required = False
 
     if 'wms' in tmp:
         if 'wayland' in tmp['wms']:
@@ -172,6 +175,8 @@ def check_options():
     add_option('cancel',[],'which','wms')
     sh_exec(['clear'])
 
+wms_next = f"{dirname(abspath(__file__))}/wms_next"
+wms_wm_pid = f"{dirname(abspath(__file__))}/wm_pid"
 wms_env = environ.copy()
 wms_env['WMS'] = 'true'
 wms_env['PWD'] = wms_env['HOME']
@@ -215,7 +220,13 @@ def load_wms_script():
 def main():
     check_options()
     print(Tmp.options)
-    choise = ask_option()
+
+    if exists(wms_next):
+        with open(wms_next,'r') as f:
+            choise = f.read()
+        sh_exec(['rm',wms_next])
+    else:
+        choise = ask_option()
 
     if choise.isnumeric():
         choise = Tmp.numbers_map[choise]
@@ -240,11 +251,26 @@ def main():
         main()
         return
 
+    if 'WMS' in environ:
+        if choise in Config.xorg or choise in Config.wayland or choise in Config.shells:
+            with open(wms_next,'w') as f:
+                f.write(choise)
+            with open(wms_wm_pid) as f:
+                sh_exec(['killall',f.read()])
+            sh_exec(['clear'])
+            return
+
+
     wms_env['SHELL'] = choise if choise in Tmp.shells else ""
     sh_exec(['clear'])
     load_wms_script()
+
+    if choise in Config.xorg or choise in Config.wayland or choise in Config.shells:
+        with open(wms_wm_pid,'w') as f:
+            f.write(choise)
+
     try:
-        sh_exec(cmd, env=wms_env, cwd=wms_env['PWD'])
+        p = sh_exec(cmd, env=wms_env, cwd=wms_env['PWD'])
     except:
         pass
 
