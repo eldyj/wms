@@ -8,6 +8,7 @@ from rich.prompt import Prompt as prompt, Confirm as confirm
 from rich.markdown import Markdown as md
 from rich.table import Table as tab
 from rich import box
+from askpas import ask_pas as input_password
 
 input = prompt.ask
 ask = confirm.ask
@@ -18,6 +19,7 @@ class Tmp:
     numbers_map = {}
     options = 0
     shells = []
+    locked = []
 
 # this things will just checked, if you don't have something it will ignore it
 class Config:
@@ -25,7 +27,6 @@ class Config:
     wayland = ['sway','Hyprland','qtile']
     shells = ['nu','sh','ash','csh','ksh','ion','zsh','bash','fish','tcsh']
     editors = ['nvim','lvim','vim','nano','micro','hx','emacs']
-
 # look and other
     colors = {
         'desktop':'green',
@@ -36,6 +37,7 @@ class Config:
         'column':'dim',
     }
 
+    password_required = True
     show_suspend = True
     border = 'rounded'
 
@@ -47,6 +49,7 @@ def init_table():
         Tmp.options_count = 0
         Tmp.numbers_map.clear()
         Tmp.shells.clear()
+        Tmp.locked.clear()
 
     Tmp.options = tab(title=f"Hello, {environ['USER']}",width=60,box=Borders.get(Config.border))
 
@@ -74,6 +77,9 @@ def load_config():
     Config.show_suspend = False
     Config.border = False
     
+    if 'password_required' in tmp:
+        Config.password_required = tmp['password_required']
+
     if 'wms' in tmp:
         if 'wayland' in tmp['wms']:
             Config.wayland = tmp['wms']['wayland']
@@ -99,7 +105,7 @@ def load_config():
                     Config.colors[i] = tmp['look']['colors'][i] 
 
 
-def add_option(name, command, binary, kind):
+def add_option(name, command, binary, kind, locked=True):
     try:
         sh_exec(['which',binary],check=True)
     except:
@@ -113,6 +119,9 @@ def add_option(name, command, binary, kind):
     elif kind == 'editor':
         color = Config.colors['editor']
 
+    if locked:
+        Tmp.locked.append(name.split()[0])
+
     Tmp.options.add_row(f"[{color}]{Tmp.options_count}[/]", f"[{Config.colors['option']}]{name}[/]", f"[{color}]{kind}[/]")
     Tmp.options_map[f"{Tmp.options_count}"] = command
     Tmp.numbers_map[f"{Tmp.options_count}"] = name.split()[0]
@@ -120,7 +129,7 @@ def add_option(name, command, binary, kind):
     Tmp.options_count += 1
 
 def add_system(name):
-    add_option(name,['systemctl',name],'systemctl','system')
+    add_option(name,['systemctl',name],'systemctl','system',False)
 
 def add_shell(name):
     add_option(f"{name}",[name],name,'tty')
@@ -179,7 +188,7 @@ def non_crashing_ask(text):
         return ask(text)
     except:
         print('')
-        return ask(text)
+        return non_crashing_ask(text)
 
 def ask_option():
     option = non_crashing_input(default='0')
@@ -213,12 +222,18 @@ def main():
 
     cmd = Tmp.options_map[choise]
 
+    if Config.password_required:
+        if choise in Tmp.locked:
+            if not input_password():
+                main()
+                return
+
     if choise in ['shutdown','reboot']:
         if non_crashing_ask(f"you really want to {choise}?"):
             sh_exec(cmd)
 
     if choise == 'cancel':
-        if non_crashing_ask('you really want to exit?'):
+        if Config.password_required or non_crashing_ask('you really want to exit?'):
             sh_exec(['clear'])
             return
 
