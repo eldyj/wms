@@ -25,7 +25,7 @@ class Tmp:
 class Config:
     xorg = ['i3','dwm','xmonad','awesome','bspwm','hypr','wtfwm','leftwm','icewm','openbox']
     wayland = ['sway','Hyprland','qtile']
-    shells = ['nu','sh','ash','csh','ksh','ion','zsh','bash','fish','tcsh']
+    shells = ['nu','sh','ash','csh','ksh93','ion','zsh','bash','fish','tcsh']
     editors = ['nvim','lvim','vim','nano','micro','hx','emacs']
 # look and other
     colors = {
