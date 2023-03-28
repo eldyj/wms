@@ -168,7 +168,7 @@ def check_options():
         add_option('suspend',['systemctl','suspend'],'systemctl','system')
 
     add_option('reboot',['reboot','-r','now'],'reboot','system')
-    add_option('shutdown',['poweroff','-r','now'],'poweroff','system')
+    add_option('poweroff',['poweroff','-r','now'],'poweroff','system')
 
     editor = 'vi' if 'EDITOR' not in environ else environ['EDITOR']
     add_option('edit config',[editor,f"{environ['HOME']}/.config/wms/config.toml"],editor,'wms')
