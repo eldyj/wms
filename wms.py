@@ -7,6 +7,7 @@ from rich import print, box
 from rich.prompt import Prompt as prompt, Confirm as confirm
 from rich.markdown import Markdown as md
 from rich.table import Table as tab
+from rich.align import Align as align
 from rich import box
 from askpas import ask_pas as input_password
 
@@ -40,6 +41,8 @@ class Config:
     password_required = True
     show_suspend = True
     border = 'rounded'
+    align = 'left'
+    width = 60
 
 Borders = {'rounded':box.ROUNDED,'minimal':box.MINIMAL,'simple':box.SIMPLE,'ascii':box.ASCII}
 
@@ -51,7 +54,7 @@ def init_table():
         Tmp.shells.clear()
         Tmp.locked.clear()
 
-    Tmp.options = tab(title=f"Hello, {environ['USER']}",width=60,box=Borders.get(Config.border))
+    Tmp.options = tab(title=f"Hello, {environ['USER']}",width=Config.width,box=Borders.get(Config.border))
 
     for i in ['#','name','type']:
         Tmp.options.add_column(f"[{Config.colors['column']}]{i}[/]")
@@ -95,6 +98,10 @@ def load_config():
             Config.editors = tmp['sessions']['editors']
 
     if 'look' in tmp:
+        if 'align' in tmp['look']:
+            Config.align = tmp['look']['align']
+        if 'width' in tmp['look']:
+            Config.width = tmp['look']['width']
         if 'show_suspend' in tmp['look']:
             Config.show_suspend = tmp['look']['show_suspend']
         if 'border' in tmp['look']:
@@ -128,9 +135,6 @@ def add_option(name, command, binary, kind, locked=True):
     Tmp.options_map[name.split()[0]] = command
     Tmp.options_count += 1
 
-def add_system(name):
-    add_option(name,['systemctl',name],'systemctl','system',False)
-
 def add_shell(name):
     add_option(f"{name}",[name],name,'tty')
     Tmp.shells.append(name)
@@ -147,10 +151,6 @@ def add_editor(command):
 def check_options():
     load_config()
     init_table()
-    system_options = ['suspend','reboot','shutdown']
-
-    if not Config.show_suspend:
-        system_options.pop(0)
 
     for i in Config.xorg:
         add_xorg(i)
@@ -164,8 +164,11 @@ def check_options():
     for i in Config.editors:
         add_editor(i)
 
-    for i in system_options:
-        add_system(i)
+    if Config.show_suspend:
+        add_option('suspend',['systemctl','suspend'],'systemctl','system')
+
+    add_option('reboot',['reboot','-r','now'],'reboot','system')
+    add_option('shutdown',['poweroff','-r','now'],'poweroff','system')
 
     editor = 'vi' if 'EDITOR' not in environ else environ['EDITOR']
     add_option('edit config',[editor,f"{environ['HOME']}/.config/wms/config.toml"],editor,'wms')
@@ -221,7 +224,7 @@ def load_wms_script():
 
 def main():
     check_options()
-    print(Tmp.options)
+    print(align(Tmp.options,align=Config.align))
 
     if exists(wms_next):
         with open(wms_next,'r') as f:
@@ -241,7 +244,7 @@ def main():
                 main()
                 return
 
-    if choise in ['shutdown','reboot']:
+    if choise in ['poweroff','reboot']:
         if non_crashing_ask(f"you really want to {choise}?"):
             sh_exec(cmd)
 
